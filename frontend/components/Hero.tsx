@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { TypeAnimation } from 'react-type-animation';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -28,14 +29,17 @@ export default function Hero() {
 
 
   return (
-    <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 z-0 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop')",
-        }}
-      />
+    <section className="relative h-[80vh] md:h-screen min-h-[500px] md:min-h-[600px] flex items-center justify-center overflow-hidden">
+      {/* Background Video */}
+      <video
+        className="absolute inset-0 z-0 object-cover w-full h-full"
+        autoPlay
+        loop
+        muted
+        playsInline
+      >
+        <source src="/hero-video.mp4" type="video/mp4" />
+      </video>
       {/* Gradient Overlay */}
       <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#070B14]/85 to-[#070B14]/40" />
 
@@ -48,9 +52,21 @@ export default function Hero() {
       >
         <motion.h1
           variants={itemVariants}
-          className="font-display text-5xl md:text-7xl text-white font-bold leading-tight tracking-tight mb-6"
+          className="font-display text-4xl sm:text-5xl md:text-7xl text-white font-bold leading-tight tracking-tight mb-6"
         >
-          Find Your Dream Home
+          Find Your Dream <br className="sm:hidden" />
+          <TypeAnimation
+            sequence={[
+              'Home', 2000,
+              'Villa', 2000,
+              'Apartment', 2000,
+              'Estate', 2000
+            ]}
+            wrapper="span"
+            speed={50}
+            className="text-gold"
+            repeat={Infinity}
+          />
         </motion.h1>
         
         <motion.p
@@ -66,13 +82,13 @@ export default function Hero() {
         >
           <Link
             href="/properties"
-            className="w-full sm:w-auto px-8 py-4 bg-gold text-white font-medium rounded-full hover:bg-gold/90 transition-colors"
+            className="w-full sm:w-auto px-8 py-4 bg-gold text-white font-medium rounded-full hover:bg-gold/90 hover:scale-105 hover:shadow-lg hover:shadow-gold/20 transition-all duration-300"
           >
             Explore Properties
           </Link>
           <Link
             href="/contact"
-            className="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-white/30 text-white font-medium rounded-full hover:bg-white/10 transition-colors"
+            className="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-white/30 text-white font-medium rounded-full hover:bg-white/10 hover:border-white/50 hover:scale-105 transition-all duration-300"
           >
             Book Consultation
           </Link>

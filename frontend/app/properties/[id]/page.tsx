@@ -1,36 +1,41 @@
 "use client";
-import { useState, use } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Bed, Bath, Square, Check, X, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Check, X, Calendar, View } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
 import toast from "react-hot-toast";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 
 import { getPropertyById, getProperties, submitInquiry } from "@/lib/api";
 
-export default function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
+export default function PropertyDetailPage() {
+  const params = useParams();
+  const id = params?.id as string;
   
   const [property, setProperty] = useState<any>(null);
   const [similarProperties, setSimilarProperties] = useState<any[]>([]);
   const [activeImage, setActiveImage] = useState("");
   
   useEffect(() => {
-    getPropertyById(resolvedParams.id).then(data => {
+    if (!id) return;
+    getPropertyById(id).then(data => {
       setProperty(data);
       setActiveImage(data.images && data.images[0]);
     }).catch(err => console.error(err));
 
     getProperties().then(data => {
       if (data && Array.isArray(data)) {
-        setSimilarProperties(data.filter((p: any) => p._id !== resolvedParams.id).slice(0, 3));
+        setSimilarProperties(data.filter((p: any) => p._id !== id).slice(0, 3));
       }
     });
-  }, [resolvedParams.id]);
+  }, [id]);
 
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [is360ViewerOpen, setIs360ViewerOpen] = useState(false);
   
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", date: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,6 +85,16 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             <p className="text-sm text-foreground/60 mb-1">Asking Price</p>
             <p className="font-display text-4xl font-bold text-gold">${property.price.toLocaleString()}</p>
           </div>
+        </div>
+
+        {/* 360 Viewer Button */}
+        <div className="flex justify-end mb-6">
+          <button 
+            onClick={() => setIs360ViewerOpen(true)}
+            className="bg-gold/10 text-gold border border-gold hover:bg-gold hover:text-navy px-6 py-3 rounded-full font-bold transition-colors flex items-center gap-2"
+          >
+            <View className="w-5 h-5" /> Explore 360° View
+          </button>
         </div>
 
         {/* Gallery */}
@@ -224,11 +239,36 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
           >
-            <button onClick={() => setIsLightboxOpen(false)} className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors">
+            <button onClick={() => setIsLightboxOpen(false)} className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors z-10">
               <X className="w-10 h-10" />
             </button>
             <div className="relative w-full max-w-6xl h-[80vh] mx-4">
               <Image src={activeImage} alt="Fullscreen" fill className="object-contain" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 360 Viewer Modal */}
+      <AnimatePresence>
+        {is360ViewerOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black flex flex-col"
+          >
+            <div className="p-4 flex justify-between items-center bg-black/50 absolute top-0 w-full z-10">
+              <h3 className="text-white font-display text-xl">360° Virtual Tour</h3>
+              <button onClick={() => setIs360ViewerOpen(false)} className="text-white hover:text-gold transition-colors">
+                <X className="w-8 h-8" />
+              </button>
+            </div>
+            <div className="flex-1 w-full relative">
+              <ReactPhotoSphereViewer 
+                src="https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg" 
+                height="100vh" 
+                width="100%" 
+                defaultZoomLvl={30}
+              />
             </div>
           </motion.div>
         )}

@@ -12,7 +12,7 @@ const testimonials = [
 ];
 
 const TestimonialCard = ({ testimonial }: { testimonial: any }) => (
-  <div className="glass-card w-[350px] p-6 mx-4 flex-shrink-0 hover:scale-102 transition-transform cursor-pointer">
+  <div className="glass-card w-[85vw] max-w-[350px] p-6 mx-4 flex-shrink-0 hover:scale-102 transition-transform cursor-pointer">
     <div className="flex gap-1 mb-4">
       {[...Array(testimonial.rating)].map((_, i) => (
         <Star key={i} className="w-4 h-4 fill-gold text-gold" />
@@ -40,19 +40,10 @@ export default function TestimonialTicker() {
       </div>
 
       {/* Row 1 (Left to Right) */}
-      <div className="relative flex overflow-x-hidden mb-8 group">
-        <div className="animate-marquee whitespace-nowrap flex group-hover:[animation-play-state:paused]">
-          {[...testimonials, ...testimonials].map((t, i) => (
+      <div className="relative flex overflow-x-hidden mb-8 group" style={{ WebkitFontSmoothing: "antialiased" }}>
+        <div className="animate-marquee whitespace-nowrap flex items-center group-hover:[animation-play-state:paused]" style={{ willChange: "transform", transform: "translateZ(0)" }}>
+          {[...testimonials, ...testimonials, ...testimonials].map((t, i) => (
             <TestimonialCard key={`row1-${i}`} testimonial={t} />
-          ))}
-        </div>
-      </div>
-
-      {/* Row 2 (Right to Left) */}
-      <div className="relative flex overflow-x-hidden group">
-        <div className="animate-marquee-reverse whitespace-nowrap flex group-hover:[animation-play-state:paused]">
-          {[...testimonials, ...testimonials].reverse().map((t, i) => (
-            <TestimonialCard key={`row2-${i}`} testimonial={t} />
           ))}
         </div>
       </div>
@@ -62,15 +53,8 @@ export default function TestimonialTicker() {
           0% { transform: translateX(0%); }
           100% { transform: translateX(-50%); }
         }
-        @keyframes marquee-reverse {
-          0% { transform: translateX(-50%); }
-          100% { transform: translateX(0%); }
-        }
         .animate-marquee {
-          animation: marquee 35s linear infinite;
-        }
-        .animate-marquee-reverse {
-          animation: marquee-reverse 35s linear infinite;
+          animation: marquee 40s linear infinite;
         }
       `}</style>
     </section>

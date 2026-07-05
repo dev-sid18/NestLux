@@ -4,6 +4,8 @@ import SearchBar from "@/components/SearchBar";
 import StatsCounter from "@/components/StatsCounter";
 import TestimonialTicker from "@/components/TestimonialTicker";
 import PropertyCard from "@/components/PropertyCard";
+import PropertyCarousel from "@/components/PropertyCarousel";
+import Commitment from "@/components/Commitment";
 import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
 import { Shield, Award, Home as HomeIcon, Users } from "lucide-react";
@@ -32,6 +34,11 @@ export default function Home() {
     <main className="min-h-screen">
       <Hero />
       <SearchBar />
+
+      {/* 3D Property Carousel */}
+      {featuredProperties.length > 0 && (
+        <PropertyCarousel properties={featuredProperties} />
+      )}
 
       {/* Featured Properties Section */}
       <section className="py-24 max-w-7xl mx-auto px-6">
@@ -109,6 +116,7 @@ export default function Home() {
       </section>
 
       <StatsCounter />
+      <Commitment />
       <TestimonialTicker />
       <Footer />
     </main>

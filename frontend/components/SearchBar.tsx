@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { Search, MapPin } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -10,9 +10,9 @@ export default function SearchBar() {
   const [isLocating, setIsLocating] = useState(false);
   const router = useRouter();
 
-  const handleNearMe = () => {
+  const handleNearMe = (silent = false) => {
     if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser");
+      if (!silent) toast.error("Geolocation is not supported by your browser");
       return;
     }
     setIsLocating(true);
@@ -31,22 +31,27 @@ export default function SearchBar() {
             
             const detectedLocation = city && state ? `${city}, ${state}` : data.results[0].formatted_address;
             setLocation(detectedLocation);
-            toast.success(`Found location: ${detectedLocation}`);
+            if (!silent) toast.success(`Found location: ${detectedLocation}`);
           } else {
-            toast.error("Could not determine your location");
+            if (!silent) toast.error("Could not determine your location");
           }
         } catch (error) {
-          toast.error("Error fetching location");
+          if (!silent) toast.error("Error fetching location");
         } finally {
           setIsLocating(false);
         }
       },
       () => {
-        toast.error("Unable to retrieve your location");
+        if (!silent) toast.error("Unable to retrieve your location");
         setIsLocating(false);
       }
     );
   };
+
+  useEffect(() => {
+    // Attempt auto-geolocation silently on load
+    handleNearMe(true);
+  }, []);
 
   const handleSearch = () => {
     if (location) {
@@ -75,7 +80,7 @@ export default function SearchBar() {
             className="w-full bg-transparent border-none outline-none text-foreground font-sans placeholder:text-foreground/40"
           />
           <button 
-            onClick={handleNearMe}
+            onClick={() => handleNearMe(false)}
             disabled={isLocating}
             className="p-2 text-gold hover:bg-gold/10 rounded-full transition-colors"
             title="Find homes near me"
