@@ -32,6 +32,8 @@ export default function PropertyCard({ id, title, price, location, bedrooms, bat
             src={image}
             alt={title}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            unoptimized={true}
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute top-4 left-4 bg-navy/90 text-gold text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-md">

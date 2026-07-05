@@ -56,7 +56,7 @@ export default function PropertiesPage() {
           <AnimatePresence>
             {filteredProperties.map((prop, i) => (
               <motion.div
-                key={prop.id}
+                key={prop._id || prop.id || i}
                 layout
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
