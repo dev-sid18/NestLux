@@ -153,7 +153,7 @@ export default function PropertyDetailPage() {
             <div>
               <h2 className="font-display text-3xl font-bold mb-6">Amenities</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {property.amenities.map((amenity, i) => (
+                {property.amenities.map((amenity: string, i: number) => (
                   <div key={i} className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-gold/20 flex items-center justify-center text-gold">
                       <Check className="w-4 h-4" />
@@ -210,7 +210,7 @@ export default function PropertyDetailPage() {
           <div className="border-t border-foreground/10 pt-16 mb-16">
             <h2 className="font-display text-3xl font-bold mb-8">Similar Properties</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {similarProperties.map((prop, i) => (
+              {similarProperties.map((prop: any, i: number) => (
                 <PropertyCard 
                   key={prop._id || prop.id}
                   id={prop._id || prop.id}
