@@ -107,7 +107,7 @@ export default function PropertyDetailPage() {
             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
           </div>
           <div className="hidden md:flex flex-col gap-4 h-full">
-            {property.images.slice(1, 4).map((img, idx) => (
+            {property.images.slice(1, 4).map((img: string, idx: number) => (
               <div 
                 key={idx} 
                 className="relative flex-1 rounded-2xl overflow-hidden cursor-pointer group"
