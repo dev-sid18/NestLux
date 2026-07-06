@@ -1,12 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PropertyCard from "@/components/PropertyCard";
 import Footer from "@/components/Footer";
 import { getProperties } from "@/lib/api";
 import { useSearchParams, useRouter } from "next/navigation";
 
-export default function PropertiesPage() {
+function PropertiesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [filterType, setFilterType] = useState(searchParams.get("type") || "all");
@@ -119,5 +119,13 @@ export default function PropertiesPage() {
       </div>
       <Footer />
     </main>
+  );
+}
+
+export default function PropertiesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen pt-32 text-center text-foreground/60 animate-pulse font-bold text-xl">Loading properties...</div>}>
+      <PropertiesContent />
+    </Suspense>
   );
 }
