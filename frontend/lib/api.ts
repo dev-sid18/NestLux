@@ -1,10 +1,13 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-export async function getProperties(location?: string, type?: string) {
+export async function getProperties(paramsObj: any = {}) {
   let url = `${API_URL}/api/properties`;
   const params = new URLSearchParams();
-  if (location) params.append('location', location);
-  if (type) params.append('type', type);
+  
+  if (paramsObj.location) params.append('location', paramsObj.location);
+  if (paramsObj.type) params.append('type', paramsObj.type);
+  if (paramsObj.maxPrice) params.append('maxPrice', paramsObj.maxPrice);
+  if (paramsObj.beds) params.append('beds', paramsObj.beds);
   
   if (params.toString()) {
     url += `?${params.toString()}`;

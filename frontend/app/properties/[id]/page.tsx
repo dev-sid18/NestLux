@@ -1,20 +1,22 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Bed, Bath, Square, Check, X, Calendar, View } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Check, X, Calendar, View, Calculator, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
 import toast from "react-hot-toast";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
+import AIChatWidget from "@/components/AIChatWidget";
 
 import { getPropertyById, getProperties, submitInquiry } from "@/lib/api";
+import { useChatStore } from "@/store/useChatStore";
 
 export default function PropertyDetailPage() {
   const params = useParams();
   const id = params?.id as string;
+  const setChatContext = useChatStore((state) => state.setContext);
   
   const [property, setProperty] = useState<any>(null);
   const [similarProperties, setSimilarProperties] = useState<any[]>([]);
@@ -25,6 +27,7 @@ export default function PropertyDetailPage() {
     getPropertyById(id).then(data => {
       setProperty(data);
       setActiveImage(data.images && data.images[0]);
+      setChatContext(`Property: ${data.title} in ${data.location}. Price: $${data.price}. Type: ${data.type}. Description: ${data.description}. Amenities: ${data.amenities?.join(', ')}`);
     }).catch(err => console.error(err));
 
     getProperties().then(data => {
@@ -175,6 +178,26 @@ export default function PropertyDetailPage() {
                 </div>
               </div>
             </div>
+
+            {/* EMI Calculator CTA */}
+            <div className="glass-card p-8 rounded-2xl border border-gold/20 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Calculator className="w-32 h-32 text-gold" />
+              </div>
+              <h2 className="font-display text-2xl font-bold mb-2">Can you afford this home?</h2>
+              <p className="text-foreground/70 mb-6 max-w-md">Use our AI-powered Super Calculator to check your EMI, get affordability analysis, and generate bank reports instantly.</p>
+              
+              <div className="bg-foreground/5 p-4 rounded-xl mb-6 inline-block">
+                <span className="text-sm font-bold text-foreground/60 block mb-1">Estimated EMI Starts At</span>
+                <span className="font-display text-3xl font-bold text-gold">₹{((property.price * 0.8 * 0.085 / 12 * Math.pow(1 + 0.085 / 12, 240)) / (Math.pow(1 + 0.085 / 12, 240) - 1)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}/mo</span>
+              </div>
+
+              <div>
+                <Link href="/calculators" className="bg-gold hover:bg-gold/90 text-navy font-bold py-3 px-8 rounded-xl transition-all inline-flex items-center gap-2">
+                  Open Super Calculator <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
           </div>
 
           {/* Sidebar Booking Form */}
@@ -263,12 +286,15 @@ export default function PropertyDetailPage() {
               </button>
             </div>
             <div className="flex-1 w-full relative">
-              <ReactPhotoSphereViewer 
-                src="https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg" 
-                height="100vh" 
+              <iframe 
                 width="100%" 
-                defaultZoomLvl={30}
-              />
+                height="100%" 
+                src="https://my.matterport.com/show/?m=JRWz6sTzNqW&play=1" 
+                frameBorder="0" 
+                allowFullScreen 
+                allow="xr-spatial-tracking"
+                className="w-full h-full"
+              ></iframe>
             </div>
           </motion.div>
         )}

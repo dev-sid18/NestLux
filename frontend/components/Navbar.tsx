@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Menu, X } from "lucide-react";
+import { Moon, Sun, Menu, X, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -14,6 +15,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const { user, logout } = useAuthStore();
 
   useEffect(() => {
     setMounted(true);
@@ -51,15 +53,25 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-sm font-medium hover:text-gold transition-colors"
-            >
-              {link.name}
-            </Link>
-          ))}
+          <Link href="/properties" className="text-sm font-medium hover:text-gold transition-colors">Properties</Link>
+          
+          <div className="relative group">
+            <button className="flex items-center gap-1 text-sm font-medium hover:text-gold transition-colors">
+              Projects Search <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform" />
+            </button>
+            <div className="absolute top-full left-0 mt-2 w-48 bg-background text-foreground border border-foreground/10 rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-xl">
+              <Link href="/properties?type=residential" className="block px-4 py-2 text-sm hover:bg-gold/10 hover:text-gold transition-colors">Residential Projects</Link>
+              <Link href="/properties?type=commercial" className="block px-4 py-2 text-sm hover:bg-gold/10 hover:text-gold transition-colors">Commercial Projects</Link>
+              <Link href="/properties?type=luxury" className="block px-4 py-2 text-sm hover:bg-gold/10 hover:text-gold transition-colors">Luxury Projects</Link>
+            </div>
+          </div>
+
+          <Link href="/about" className="text-sm font-medium hover:text-gold transition-colors">About</Link>
+          <Link href="/services" className="text-sm font-medium hover:text-gold transition-colors">Services</Link>
+          <Link href="/contact" className="text-sm font-medium hover:text-gold transition-colors">Contact</Link>
+          <Link href="/calculators" className="ml-4 bg-gold hover:bg-gold/90 text-navy px-5 py-2 rounded-full text-sm font-bold shadow-lg transition-all hover:scale-105 flex items-center gap-2">
+            Calculate EMI
+          </Link>
         </nav>
 
         {/* Actions */}
@@ -77,12 +89,23 @@ export default function Navbar() {
               )}
             </button>
           )}
-          <Link
-            href="/contact"
-            className="px-6 py-2.5 rounded-full border border-gold text-gold hover:bg-gold hover:text-white dark:hover:text-black transition-all font-medium text-sm"
-          >
-            Book a Tour
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard" className="text-sm font-medium hover:text-gold transition-colors">
+                Dashboard
+              </Link>
+              <button onClick={logout} className="text-sm font-medium text-red-400 hover:text-red-500 transition-colors">
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="px-6 py-2.5 rounded-full border border-gold text-gold hover:bg-gold hover:text-white dark:hover:text-black transition-all font-medium text-sm"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -132,13 +155,24 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <Link
-              href="/contact"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="mt-4 px-8 py-3 rounded-full bg-gold text-white font-medium"
-            >
-              Book a Tour
-            </Link>
+            {user ? (
+              <div className="flex flex-col items-center gap-4 mt-4">
+                <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="px-8 py-3 rounded-full bg-gold text-white font-medium">
+                  Dashboard
+                </Link>
+                <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="text-red-400 font-medium">
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="mt-4 px-8 py-3 rounded-full bg-gold text-white font-medium"
+              >
+                Sign In
+              </Link>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

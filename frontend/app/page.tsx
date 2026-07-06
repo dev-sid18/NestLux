@@ -11,9 +11,11 @@ import { useEffect, useState } from "react";
 import { Shield, Award, Home as HomeIcon, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { getFeaturedProperties } from "@/lib/api";
+import { useChatStore } from "@/store/useChatStore";
 
 export default function Home() {
   const [featuredProperties, setFeaturedProperties] = useState<any[]>([]);
+  const setChatContext = useChatStore((state) => state.setContext);
 
   useEffect(() => {
     getFeaturedProperties().then(data => {

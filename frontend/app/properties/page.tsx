@@ -4,22 +4,49 @@ import { motion, AnimatePresence } from "framer-motion";
 import PropertyCard from "@/components/PropertyCard";
 import Footer from "@/components/Footer";
 import { getProperties } from "@/lib/api";
+import { useSearchParams, useRouter } from "next/navigation";
 
 export default function PropertiesPage() {
-  const [filterType, setFilterType] = useState("all");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [filterType, setFilterType] = useState(searchParams.get("type") || "all");
   const [allProperties, setAllProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getProperties().then(data => {
+    const paramsObj = {
+      location: searchParams.get("location") || "",
+      type: searchParams.get("type") || "",
+      maxPrice: searchParams.get("maxPrice") || "",
+      beds: searchParams.get("beds") || ""
+    };
+
+    setLoading(true);
+    getProperties(paramsObj).then(data => {
       if (data && Array.isArray(data)) {
         setAllProperties(data);
       }
-    }).catch(err => console.error("Error fetching properties:", err));
-  }, []);
+      setLoading(false);
+    }).catch(err => {
+      console.error("Error fetching properties:", err);
+      setLoading(false);
+    });
+  }, [searchParams]);
 
   const filteredProperties = filterType === "all" 
     ? allProperties 
     : allProperties.filter(p => p.type.toLowerCase() === filterType.toLowerCase());
+
+  const handleFilterClick = (type: string) => {
+    setFilterType(type);
+    if (type === 'all') {
+      router.push('/properties');
+    } else {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('type', type);
+      router.push(`/properties?${params.toString()}`);
+    }
+  };
 
   return (
     <main className="min-h-screen pt-24 bg-background">
@@ -36,7 +63,7 @@ export default function PropertiesPage() {
           {['all', 'house', 'villa', 'apartment', 'studio', 'penthouse'].map((type) => (
             <button
               key={type}
-              onClick={() => setFilterType(type)}
+              onClick={() => handleFilterClick(type)}
               className={`px-6 py-2 rounded-full capitalize font-medium transition-all ${
                 filterType === type 
                   ? 'bg-gold text-white shadow-lg' 
@@ -80,11 +107,15 @@ export default function PropertiesPage() {
           </AnimatePresence>
         </motion.div>
 
-        {filteredProperties.length === 0 && (
-          <div className="text-center py-20 text-foreground/60">
-            No properties found matching your criteria.
+        {loading ? (
+          <div className="text-center py-20 text-foreground/60 animate-pulse font-bold text-xl">
+            Searching for your dream home...
           </div>
-        )}
+        ) : filteredProperties.length === 0 ? (
+          <div className="text-center py-20 text-foreground/60">
+            No properties found matching your criteria. Try adjusting your search!
+          </div>
+        ) : null}
       </div>
       <Footer />
     </main>
